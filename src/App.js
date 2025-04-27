@@ -4,19 +4,19 @@ const initialFriends = [
   {
     id: 118836,
     name: "Clark",
-    image: "https://i.pravatar.cc/48?u=118836",
+    image: "https://api.dicebear.com/7.x/adventurer/svg?seed=118836",
     balance: -7,
   },
   {
     id: 933372,
     name: "Sarah",
-    image: "https://i.pravatar.cc/48?u=933372",
+    image: "https://api.dicebear.com/7.x/adventurer/svg?seed=118838",
     balance: 20,
   },
   {
     id: 499476,
     name: "Anthony",
-    image: "https://i.pravatar.cc/48?u=499476",
+    image: "https://api.dicebear.com/7.x/adventurer/svg?seed=118839",
     balance: 0,
   },
 ];
@@ -105,18 +105,30 @@ function Friend({ friend, onHandleSelection, selectedFriend }) {
 }
 function FormAddFriend({ onAddFriend }) {
   const [name, setName] = useState("");
-  const [image, setImage] = useState("https://i.pravatar.cc/48");
+  const [image, setImage] = useState(
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=118839"
+  );
+
   function handleSubmit(e) {
     e.preventDefault();
-    if (!name || !image) return;
+    if (!name) return;
+
     const id = crypto.randomUUID();
+    const randomSeed = Math.random().toString(36).substring(2, 10); // Random string
+    const randomImage = `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomSeed}`;
+
     const newFriend = {
       name,
       balance: 0,
       id,
-      image,
+      image: randomImage, // use the random DiceBear avatar
     };
+
     onAddFriend(newFriend);
+
+    // Optionally reset the form
+    setName("");
+    setImage("https://api.dicebear.com/7.x/adventurer/svg?seed=118839");
   }
   return (
     <form className="form-add-friend" onSubmit={handleSubmit}>
@@ -131,6 +143,7 @@ function FormAddFriend({ onAddFriend }) {
         type="text"
         value={image}
         onChange={(e) => setImage(e.target.value)}
+        disabled
       />
       <Button>Add</Button>
     </form>
