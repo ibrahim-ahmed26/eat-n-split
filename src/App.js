@@ -41,9 +41,21 @@ export default function App() {
     setSelectedFriend((cur) => (cur?.id === friend.id ? null : friend));
     setShowAddFriend(false);
   }
-  function handleBill(value) {
-    console.log(value);
+  function handleBill(amountInput) {
+    const amount = parseFloat(amountInput);
+    setSelectedFriend((friend) => ({
+      ...friend,
+      balance: friend.balance + amount,
+    }));
+
+    setAddFriends((prevFriends) =>
+      prevFriends.map((f) =>
+        f.id === selectedFriend.id ? { ...f, balance: f.balance + amount } : f
+      )
+    );
+    setSelectedFriend(null);
   }
+
   return (
     <div className="app">
       <div className="sidebar">
@@ -149,13 +161,22 @@ function FormAddFriend({ onAddFriend }) {
     </form>
   );
 }
-function FormSplitBill({ selectedFriend }) {
+function FormSplitBill({ selectedFriend, onHandleBill }) {
   const [bill, setBill] = useState("");
   const [paid, setPaid] = useState("");
   const [whoIsPaying, setWhoIsPaying] = useState("user");
   const numberPaid = bill ? bill - paid : "";
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!paid || !bill) return;
+    onHandleBill(whoIsPaying === "user" ? numberPaid : -numberPaid);
+    // Reset form values after submission
+    setBill("");
+    setPaid("");
+    setWhoIsPaying("user");
+  }
   return (
-    <form className="form-split-bill">
+    <form className="form-split-bill" onSubmit={handleSubmit}>
       <h2>split a bill with {selectedFriend.name}</h2>
       <label>💵bill value</label>
       <input
